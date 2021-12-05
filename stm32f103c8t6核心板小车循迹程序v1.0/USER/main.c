@@ -25,9 +25,8 @@ int main(void)
 	  sign_crossing();
 		forward();
 
-
-		
-		}}
+		}
+}
 
 
 

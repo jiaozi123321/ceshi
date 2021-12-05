@@ -8,7 +8,13 @@ int OUTPUT1,OUTPUT2,stopL,stopR;//控制电机速度的pwm值
 int PID_sd=0 ;//小车差速PID的pwm输出值
 int PID_jc=6000 ;//小车基础速度PID的PWM输出值
 extern int error ,sign;//引用xunxian中定义的error ,a,sign
-int motor_speed=7200;
+//int motor_speed=7200;
+int Max_Speed = 7200;		//最大输出PWM
+int Min_Speed = 0;			//最小输出PWM
+int Wheel_90_Speed			 = 5000;//90度转向速度
+int Wheel_Exceed90_Speed = 5000;//超90度锐角转向速度
+int zhijiao_time = 300; //直角转弯延时
+int ruijiao_time = 500; //锐角转弯延时
 
 
 
@@ -75,42 +81,42 @@ void turn()
 {
 	if(sign==1)//左转90度
 	{
-	youzhuan();
-	TIM_SetCompare3(TIM2,5000);//电机控制
-	TIM_SetCompare4(TIM2,5000);//电机控制
-	delay_ms(300);
-	sign=0;//跳出转向
+		youzhuan();
+		TIM_SetCompare3(TIM2,Wheel_90_Speed);//电机控制
+		TIM_SetCompare4(TIM2,Wheel_90_Speed);//电机控制
+		delay_ms(zhijiao_time);
+		sign=0;  //跳出转向
 	}
 	if(sign==2)//右转90度
 	{
 		zuozhuan ();
-		TIM_SetCompare3(TIM2,5000);//电机控制
-    TIM_SetCompare4(TIM2,5000);//电机控制
-		delay_ms(300);
+		TIM_SetCompare3(TIM2,Wheel_90_Speed);//电机控制
+    TIM_SetCompare4(TIM2,Wheel_90_Speed);//电机控制
+		delay_ms(zhijiao_time);
 		sign=0;
 	}
 	if(sign==3)
 	{
 		youzhuan ();
-		TIM_SetCompare3(TIM2,5000);//电机控制
-    TIM_SetCompare4(TIM2,5000);//电机控制
-		delay_ms(500);
+		TIM_SetCompare3(TIM2,Wheel_Exceed90_Speed);//电机控制
+    TIM_SetCompare4(TIM2,Wheel_Exceed90_Speed);//电机控制
+		delay_ms(ruijiao_time);
 		sign=0;//跳出转向
 	}
 	if(sign==4)
 	{
 		zuozhuan ();
-		TIM_SetCompare3(TIM2,5000);//电机控制
-    TIM_SetCompare4(TIM2,5000);//电机控制
-		delay_ms(500);
+		TIM_SetCompare3(TIM2,Wheel_Exceed90_Speed);//电机控制
+    TIM_SetCompare4(TIM2,Wheel_Exceed90_Speed);//电机控制
+		delay_ms(ruijiao_time);
 		sign=0;
 	}
 	if(sign==6)
 	{
 		zuozhuan();
-		TIM_SetCompare3(TIM2,5000);//电机控制
-    TIM_SetCompare4(TIM2,5000);//电机控制
-		delay_ms(500);
+		TIM_SetCompare3(TIM2,Wheel_90_Speed);//电机控制
+    TIM_SetCompare4(TIM2,Wheel_90_Speed);//电机控制
+		delay_ms(ruijiao_time);
 		sign=0;
 	}
 }
@@ -134,15 +140,15 @@ int Position_PIDS(int Encoder,int Target)
 //	Last_Bias=Bias;
 //	return Pwm;
 //}
-void straight_s_line()
+void straight_s_line()  //输出速度初始化
 {
 	PID_sd=Position_PIDS(error,0);
 	OUTPUT1=PID_jc+PID_sd;//基础速度+速度偏差量 //基础速度也可以恒定为某个值
 	OUTPUT2=PID_jc-PID_sd;//基础速度-速度偏差量
-	if(OUTPUT1>7200) OUTPUT1=7200;
-    if(OUTPUT1<0) OUTPUT1=0;
-	  if(OUTPUT2>7200) OUTPUT2=7200;
-    if(OUTPUT2<0) OUTPUT2=0;
+		if(OUTPUT1 > Max_Speed) OUTPUT1=Max_Speed;
+    if(OUTPUT1 < Min_Speed) OUTPUT1=Min_Speed;
+	  if(OUTPUT2 > Max_Speed) OUTPUT2=Min_Speed;
+    if(OUTPUT2 < Min_Speed) OUTPUT2=Min_Speed;
 	TIM_SetCompare3(TIM2,OUTPUT1);//电机控制
 	TIM_SetCompare4(TIM2,OUTPUT2);//电机控制
 }

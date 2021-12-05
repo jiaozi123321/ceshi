@@ -12,23 +12,23 @@ float wt=10,ct=30;
 void hongwai_Init(void)
 {
   	GPIO_InitTypeDef GPIO_InitStructure ;
-		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA,ENABLE);//使能GPIOA的时钟
-  	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB,ENABLE);//使能GPIOB的时钟
-		RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO,ENABLE);//使能复用时钟
+		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA,ENABLE);	//使能GPIOA的时钟
+  	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB,ENABLE);	//使能GPIOB的时钟
+		RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO ,ENABLE);	//使能复用时钟
 	
-		GPIO_InitStructure.GPIO_Mode=GPIO_Mode_IN_FLOATING;//浮空输入
+		GPIO_InitStructure.GPIO_Mode=GPIO_Mode_IN_FLOATING;		//浮空输入
 		GPIO_InitStructure.GPIO_Pin=GPIO_Pin_4|GPIO_Pin_5|GPIO_Pin_6|GPIO_Pin_7;
 		GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;
-		GPIO_Init(GPIOA,&GPIO_InitStructure);
+		GPIO_Init(GPIOA,&GPIO_InitStructure);//初始化PA4,PA5,PA6,PA7
 
-	  GPIO_InitStructure.GPIO_Mode=GPIO_Mode_IN_FLOATING;//浮空输入
+	  GPIO_InitStructure.GPIO_Mode=GPIO_Mode_IN_FLOATING;		//浮空输入
 	  GPIO_InitStructure.GPIO_Pin=GPIO_Pin_0|GPIO_Pin_1|GPIO_Pin_3|GPIO_Pin_4|GPIO_Pin_5;
 	  GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;
 	  GPIO_Init(GPIOB,&GPIO_InitStructure);//初始化PB0,PB1,PB3,PB4,PB5
 	  GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable,ENABLE);//关闭JTAGD，将PB3，PB4配置为普通引脚
 }
 
-void read_sensor(void)//红外传感器识别黑线的返回值为0，未识别的返回为1
+void read_sensor(void)//红外传感器识别黑线的返回值为0，未识别的返回为1  从左到右
 {
 				sensor[0]=GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_4);
 				sensor[1]=GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_5);
@@ -79,23 +79,23 @@ void read_sensor(void)//红外传感器识别黑线的返回值为0，未识别的返回为1
 		void m_speed_change()
 		{
 		 if(sensor[0]==0&&sensor[1]==0&&sensor[2]==0&&sensor[3]==1&&sensor[4]==0&&sensor[5]==0&&sensor[6]==0&&sensor[7]==0)
-		{ error= -wt; }//0001 0000
+		{ error= -wt; } //0 0 0 1   0 0 0 0
 		 if(sensor[0]==0&&sensor[1]==0&&sensor[2]==1&&sensor[3]==0&&sensor[4]==0&&sensor[5]==0&&sensor[6]==0&&sensor[7]==0)
-		{ error= -ct; }//0010 0000
+		{ error= -ct; }	//0 0 1 0   0 0 0 0
 		 if(sensor[0]==0&&sensor[1]==1&&sensor[2]==0&&sensor[3]==0&&sensor[4]==0&&sensor[5]==0&&sensor[6]==0&&sensor[7]==0)
-		{ error=-2*ct;}//0100 0000
+		{ error=-2*ct;}	//0 1 0 0   0 0 0 0
 		 if(sensor[0]==1&&sensor[1]==0&&sensor[2]==0&&sensor[3]==0&&sensor[4]==0&&sensor[5]==0&&sensor[6]==0&&sensor[7]==0)
-		{ error=-3*ct;}//1000 0000
+		{ error=-3*ct;} //1 0 0 0   0 0 0 0
 		 if(sensor[0]==0&&sensor[1]==0&&sensor[2]==0&&sensor[3]==0&&sensor[4]==1&&sensor[5]==0&&sensor[6]==0&&sensor[7]==0)
-		{ error= wt; } //0000 1000
+		{ error= wt; }  //0 0 0 0   1 0 0 0
 		 if(sensor[0]==0&&sensor[1]==0&&sensor[2]==0&&sensor[3]==0&&sensor[4]==0&&sensor[5]==1&&sensor[6]==0&&sensor[7]==0)
-		{ error= ct; } //0000 0100
+		{ error= ct; } 	//0 0 0 0   0 1 0 0
 		 if(sensor[0]==0&&sensor[1]==0&&sensor[2]==0&&sensor[3]==0&&sensor[4]==0&&sensor[5]==0&&sensor[6]==1&&sensor[7]==0)
-		{ error=2*ct;} //0000 0010
+		{ error=2*ct;}  //0 0 0 0   0 0 1 0
 		 if(sensor[0]==0&&sensor[1]==0&&sensor[2]==0&&sensor[3]==0&&sensor[4]==0&&sensor[5]==0&&sensor[6]==0&&sensor[7]==1)
-		{ error=3*ct;}//0000 0001
+		{ error=3*ct;}  //0 0 0 0   0 0 0 1
 		 if(sensor[0]==0&&sensor[1]==0&&sensor[2]==0&&sensor[3]==1&&sensor[4]==1&&sensor[5]==0&&sensor[6]==0&&sensor[7]==0)
-		{ error= 0;  } //0001 1000
+		{ error= 0;  }  //0 0 0 1   1 0 0 0
 		 if(sensor[0]==0&&sensor[1]==0&&sensor[2]==0&&sensor[3]==0&&sensor[4]==0&&sensor[5]==0&&sensor[6]==0&&sensor[7]==0)
 		{
 			if(error == (-3*ct))
